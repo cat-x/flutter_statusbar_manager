@@ -33,16 +33,13 @@ public class FlutterStatusbarManagerPlugin implements FlutterPlugin, MethodCallH
      */
     public static void registerWith(Registrar registrar) {
         MethodChannel channel = new MethodChannel(registrar.messenger(), "flutter_statusbar_manager");
-        FlutterStatusbarManagerPlugin instance = new FlutterStatusbarManagerPlugin(registrar);
+        FlutterStatusbarManagerPlugin instance = new FlutterStatusbarManagerPlugin();
+        instance.activity = registrar.activity();
         channel.setMethodCallHandler(instance);
     }
 
-    private FlutterStatusbarManagerPlugin(Registrar registrar) {
-        this.activity = registrar.activity();
-    }
-
     @Override
-    public void onMethodCall(MethodCall call, Result result) {
+    public void onMethodCall(MethodCall call, @NonNull Result result) {
         switch (call.method) {
             case "setColor":
                 handleSetColor(call, result);
@@ -178,7 +175,7 @@ public class FlutterStatusbarManagerPlugin implements FlutterPlugin, MethodCallH
 
             View decorView = activity.getWindow().getDecorView();
             int flags = decorView.getSystemUiVisibility();
-            if (style.equals("dark-content")) {
+            if ("dark-content".equals(style)) {
                 flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
             } else {
                 flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
@@ -251,7 +248,7 @@ public class FlutterStatusbarManagerPlugin implements FlutterPlugin, MethodCallH
 
             View decorView = activity.getWindow().getDecorView();
             int flags = decorView.getSystemUiVisibility();
-            if (style.equals("dark")) {
+            if ("dark".equals(style)) {
                 flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
             } else {
                 flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
