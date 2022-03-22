@@ -2,15 +2,20 @@ package com.foo.flutterstatusbarmanager;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+
+import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -20,8 +25,8 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * FlutterStatusbarManagerPlugin
  */
-public class FlutterStatusbarManagerPlugin implements MethodCallHandler {
-    private final Activity activity;
+public class FlutterStatusbarManagerPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware {
+    private Activity activity;
 
     /**
      * Plugin registration.
@@ -273,4 +278,29 @@ public class FlutterStatusbarManagerPlugin implements MethodCallHandler {
         return activity.getResources().getDisplayMetrics().density;
     }
 
+    @Override public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        MethodChannel channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_statusbar_manager");
+        channel.setMethodCallHandler(this);
+    }
+
+    @Override public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        MethodChannel channel = new MethodChannel(binding.getBinaryMessenger(), "flutter_statusbar_manager");
+        channel.setMethodCallHandler(null);
+    }
+
+    @Override public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+    }
+
+    @Override public void onDetachedFromActivityForConfigChanges() {
+
+    }
+
+    @Override public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+
+    }
+
+    @Override public void onDetachedFromActivity() {
+        activity = null;
+    }
 }
